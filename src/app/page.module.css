@@ -1,168 +1,213 @@
-.page {
-  --gray-rgb: 0, 0, 0;
-  --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
-  --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
-
-  display: grid;
-  grid-template-rows: 20px 1fr 20px;
-  align-items: center;
-  justify-items: center;
-  min-height: 100svh;
-  padding: 80px;
-  gap: 64px;
-  font-family: var(--font-geist-sans);
-}
-
-@media (prefers-color-scheme: dark) {
-  .page {
-    --gray-rgb: 255, 255, 255;
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
-    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-  }
-}
-
-.main {
+/* page.module.css */
+/* Container for the entire page */
+.container {
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  grid-row-start: 2;
+  min-height: 100vh;
+  font-family: sans-serif;
+  background-color: #EDE8D0;
+  justify-content: center;
 }
 
-.main ol {
-  font-family: var(--font-geist-mono);
-  padding-left: 0;
-  margin: 0;
-  font-size: 14px;
-  line-height: 24px;
-  letter-spacing: -0.01em;
-  list-style-position: inside;
+/* Header with logo and step bar */
+.header {
+  display: flex;
+  align-items: center;
+  background-color: #f7f7f9;
+  padding: 1rem;
+  border-bottom: 1px solid #eaeaea;
 }
 
-.main li:not(:last-of-type) {
-  margin-bottom: 8px;
+/* Logo area on the left */
+.logo img {
+  height: 40px; /* Adjust as needed */
+  object-fit: contain;
+  margin-right: 2rem;
 }
 
-.main code {
-  font-family: inherit;
-  background: var(--gray-alpha-100);
-  padding: 2px 4px;
-  border-radius: 4px;
+/* Steps container */
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #000000;
+}
+
+/* A simple step item */
+.step {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  cursor: default;
+}
+
+/* Highlight for the active step */
+.step.active {
+  border-color: #0070f3;
+  color: #0070f3;
   font-weight: 600;
 }
 
-.ctas {
-  display: flex;
-  gap: 16px;
-}
-
-.ctas a {
-  appearance: none;
-  border-radius: 128px;
-  height: 48px;
-  padding: 0 20px;
-  border: none;
-  border: 1px solid transparent;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+/* Main content area */
+.main {
+  flex: 1;
+  padding: 2rem;
   justify-content: center;
-  font-size: 16px;
-  line-height: 20px;
+  margin-top: 4rem;
+}
+
+/* Form container */
+.formContainer {
+  background-color: #000000;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* Input fields */
+.formContainer label {
+  display: block;
+  margin-bottom: 1rem;
   font-weight: 500;
+  color: #ffffff;
+}
+.formContainer h1 {
+  margin-bottom: 2rem; /* increase spacing under the title */
+  text-align: center;   /* optional: center the title text */
+}
+.formContainer input,
+.formContainer select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1.1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: medium;
 }
 
-a.primary {
-  background: var(--foreground);
-  color: var(--background);
-  gap: 8px;
+/* Error messages */
+.errorText {
+  color: red;
+  margin: -0.5rem 0 1rem 0;
 }
 
-a.secondary {
-  border-color: var(--gray-alpha-200);
-  min-width: 180px;
+/* Button */
+.submitButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #0070f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: medium;
 }
 
+.submitButton:hover {
+  background-color: #005bb5;
+}
+/* Container for the entire page */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensures footer is at bottom if content is short */
+}
+
+/* Main content area should expand */
+.main {
+  flex: 1;
+}
+
+/* Footer Styles */
 .footer {
-  grid-row-start: 3;
+  background-color: #1c1e2b; /* Dark background */
+  color: #fff;
+  padding: 2rem 1rem;
+  margin-top: auto;
+}
+
+.footerContainer {
   display: flex;
-  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.footer a {
+.footerCol {
+  flex: 1 1 200px;
+  min-width: 200px;
+}
+
+.footerCol h3 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.footerCol ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footerCol ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footerCol ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footerCol ul li a:hover {
+  text-decoration: underline;
+}
+
+/* Newsletter section */
+.newsletter {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  max-width: 250px;
 }
 
-.footer img {
-  flex-shrink: 0;
+.newsletter p {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
-
-  .footer a:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
+.newsletter input {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: none;
+  border-radius: 4px;
 }
 
-@media (max-width: 600px) {
-  .page {
-    padding: 32px;
-    padding-bottom: 80px;
-  }
+.newsletter button {
+  padding: 0.5rem 1rem;
+  background-color: #0070f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
-  .main {
-    align-items: center;
-  }
+.newsletter button:hover {
+  background-color: #005bb5;
+}
 
-  .main ol {
-    text-align: center;
-  }
-
-  .ctas {
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .footerContainer {
     flex-direction: column;
-  }
-
-  .ctas a {
-    font-size: 14px;
-    height: 40px;
-    padding: 0 16px;
-  }
-
-  a.secondary {
-    min-width: auto;
-  }
-
-  .footer {
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
+    align-items: flex-start;
   }
 }

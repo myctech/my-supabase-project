@@ -1,94 +1,254 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import { useState, ChangeEvent, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import styles from './page.module.css';
+
+interface FormData {
+  campaignBudget: string;
+  campaignDuration: string;
+  location: string;
+  sportsPreference: string;
+  intendedImpressions: string;
+}
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [formData, setFormData] = useState<FormData>({
+    campaignBudget: '',
+    campaignDuration: '',
+    location: '',
+    sportsPreference: '',
+    intendedImpressions: '',
+  });
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  const [fieldErrors, setFieldErrors] = useState<Partial<FormData>>({});
+  const [serverError, setServerError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const validateFields = (): Partial<FormData> => {
+    const errors: Partial<FormData> = {};
+
+    // 1) Campaign Budget: whole number only (no decimals)
+    if (!/^\d+$/.test(formData.campaignBudget)) {
+      errors.campaignBudget = 'Please enter a whole number (no decimals) for the campaign budget.';
+    }
+
+    // 2) Campaign Duration: whole number (weeks)
+    if (!/^\d+$/.test(formData.campaignDuration)) {
+      errors.campaignDuration = 'Please enter a whole number (no decimals) for the campaign duration (in weeks).';
+    }
+
+    // 3) Location: exactly 3 alphanumeric characters
+    if (!/^[A-Za-z0-9]{3}$/.test(formData.location)) {
+      errors.location = 'Please enter the first three alphanumeric characters of your UK postcode (e.g., SW1).';
+    }
+
+    // 4) Sports Preference: must choose Cricket, Football, or Golf
+    if (!formData.sportsPreference) {
+      errors.sportsPreference = 'Please select a sports preference.';
+    }
+
+    // 5) Intended Impressions: whole number (e.g. 10000)
+    if (!/^\d+$/.test(formData.intendedImpressions)) {
+      errors.intendedImpressions = 'Please enter a valid integer (e.g. 10000) for intended impressions.';
+    }
+
+    return errors;
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setServerError(null);
+
+    const errors = validateFields();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/recommendations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setServerError(data.error || 'Something went wrong.');
+      } else {
+        // Store recommendations in sessionStorage
+        sessionStorage.setItem('recommendationResults', JSON.stringify(data.products));
+        // Redirect to the results page
+        router.push('/results');
+      }
+    } catch (err) {
+      setServerError('An unexpected error occurred while fetching recommendations.');
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      {/* HEADER with Logo & Steps */}
+      <header className={styles.header}>
+        <div className={styles.logo}>
+          <img src="/your-logo.png" alt="Your Logo" />
+        </div>
+        <div className={styles.steps}>
+          <div className={`${styles.step} ${styles.active}`}>Deal</div>
+          <div className={styles.step}>Buyer Info</div>
+          <div className={styles.step}>Your Info</div>
+          <div className={styles.step}>Line Items</div>
+          <div className={styles.step}>Signature & Payment</div>
+          <div className={styles.step}>Review</div>
+        </div>
+      </header>
+
+      {/* MAIN Content */}
+      <main className={styles.main}>
+        <div className={styles.formContainer}>
+          <h1>Campaign Recommendation Form</h1>
+          <form onSubmit={handleSubmit}>
+            <div className={styles.formGroup}>
+              <label>Campaign Budget (no decimals):</label>
+              <input
+                type="number"
+                step="1"
+                name="campaignBudget"
+                value={formData.campaignBudget}
+                onChange={handleChange}
+                required
+              />
+              {fieldErrors.campaignBudget && (
+                <p className={styles.errorText}>{fieldErrors.campaignBudget}</p>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Campaign Duration (weeks):</label>
+              <input
+                type="number"
+                step="1"
+                name="campaignDuration"
+                value={formData.campaignDuration}
+                onChange={handleChange}
+                required
+              />
+              {fieldErrors.campaignDuration && (
+                <p className={styles.errorText}>{fieldErrors.campaignDuration}</p>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Location (first 3 characters of UK postcode):</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                required
+              />
+              {fieldErrors.location && (
+                <p className={styles.errorText}>{fieldErrors.location}</p>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Sports Preference:</label>
+              <select
+                name="sportsPreference"
+                value={formData.sportsPreference}
+                onChange={handleChange}
+                required
+              >
+                <option value="">-- Select a sport --</option>
+                <option value="Cricket">Cricket</option>
+                <option value="Football">Football</option>
+                <option value="Golf">Golf</option>
+              </select>
+              {fieldErrors.sportsPreference && (
+                <p className={styles.errorText}>{fieldErrors.sportsPreference}</p>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Intended Impressions (e.g. 10000):</label>
+              <input
+                type="number"
+                step="1"
+                name="intendedImpressions"
+                value={formData.intendedImpressions}
+                onChange={handleChange}
+                required
+              />
+              {fieldErrors.intendedImpressions && (
+                <p className={styles.errorText}>{fieldErrors.intendedImpressions}</p>
+              )}
+            </div>
+
+            <button type="submit" className={styles.submitButton}>
+              Get Recommendations
+            </button>
+          </form>
+
+          {serverError && <p className={styles.errorText}>{serverError}</p>}
         </div>
       </main>
+
+      {/* FOOTER SECTION */}
       <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        <div className={styles.footerContainer}>
+          <div className={styles.footerCol}>
+            <h3>Info</h3>
+            <ul>
+              <li><a href="#">Formats</a></li>
+              <li><a href="#">Compression</a></li>
+              <li><a href="#">Pricing</a></li>
+              <li><a href="#">FAQ</a></li>
+              <li><a href="#">Status</a></li>
+              <li><a href="#">Policy</a></li>
+            </ul>
+          </div>
+
+          <div className={styles.footerCol}>
+            <h3>Getting Started</h3>
+            <ul>
+              <li><a href="#">Introduction</a></li>
+              <li><a href="#">Themes</a></li>
+              <li><a href="#">Documentation</a></li>
+              <li><a href="#">Usages</a></li>
+              <li><a href="#">Elements</a></li>
+              <li><a href="#">Global</a></li>
+            </ul>
+          </div>
+
+          <div className={styles.footerCol}>
+            <h3>Resources</h3>
+            <ul>
+              <li><a href="#">API</a></li>
+              <li><a href="#">Form Validation</a></li>
+              <li><a href="#">Accessibility</a></li>
+              <li><a href="#">Marketplace</a></li>
+              <li><a href="#">Visibility</a></li>
+              <li><a href="#">Community</a></li>
+            </ul>
+          </div>
+
+          <div className={`${styles.footerCol} ${styles.newsletter}`}>
+            <h3>Newsletter</h3>
+            <p>
+              Subscribe to our newsletter for a weekly dose of news, updates,
+              helpful tips, and exclusive offers.
+            </p>
+            <input type="email" placeholder="Your email" />
+            <button>Subscribe</button>
+          </div>
+        </div>
       </footer>
     </div>
   );
