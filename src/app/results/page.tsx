@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import styles from './results.module.css';
+import Image from 'next/image';
 
 interface Product {
   id: number;
@@ -41,11 +42,14 @@ export default function Results() {
         {products.map((product) => (
           <div key={product.id} className={styles.productCard}>
             {/* Image (or placeholder) */}
-            <img
-              src={product.imageUrl || '/placeholder.png'}
-              alt={product.name || 'Product Image'}
-              className={styles.productImage}
-            />
+            <Image
+  src={product.imageUrl || '/placeholder.png'}
+  alt={product.name || 'Product Image'}
+  className={styles.productImage}
+  width={200}   // adjust to your desired width
+  height={200}  // adjust to your desired height
+/>
+
 
             {/* Product Title & Price */}
             <h2>{product.name || `Product #${product.id}`}</h2>
