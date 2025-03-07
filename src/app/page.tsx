@@ -3,6 +3,7 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
+import Image from 'next/image';
 
 interface FormData {
   campaignBudget: string;
@@ -87,6 +88,7 @@ export default function Home() {
         // Redirect to the results page
         router.push('/results');
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setServerError('An unexpected error occurred while fetching recommendations.');
     }
@@ -97,7 +99,7 @@ export default function Home() {
       {/* HEADER with Logo & Steps */}
       <header className={styles.header}>
         <div className={styles.logo}>
-          <img src="/your-logo.png" alt="Your Logo" />
+        <Image src="/your-logo.png" alt="Your Logo" width={100} height={50} />
         </div>
         <div className={styles.steps}>
           <div className={`${styles.step} ${styles.active}`}>Deal</div>
